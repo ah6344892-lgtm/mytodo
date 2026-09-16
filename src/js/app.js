@@ -2,43 +2,67 @@ const todoInput = document.querySelector('#todoInput')
 const todoAddButton = document.querySelector('#todoAddButton')
 const todoContainer = document.querySelector('#todoContainer')
 const quoteContainer = document.querySelector('#quoteContainer')
+let todos = JSON.parse(localStorage.getItem('todos')) || []
 
-function addTodo(todo) {
-    if (todo == "") {
-        return alert('Please enter value')
-    }
+function renderTodo() {
+    todoContainer.innerHTML = ''
 
-    todoContainer.innerHTML += `<li class="todoItem border border-todo-primary p-2 rounded-lg flex flex-row justify-between items-center">
-                    <p class="todoText">${todo}</p>
+    todos.forEach((e) => {
+        todoContainer.innerHTML += `<li class="todoItem border border-todo-primary p-2 rounded-lg flex flex-row justify-between items-center">
+                    <p class="todoText ${e.complete ? 'line-through' : ''}">${e.name}</p>
                     <div>
-                        <input  class="todoCheckbox cursor-pointer" type="checkbox" name="todoCheckbox" >
-                        <button  class="deleteBtn text-todo-danger font-bold mr-2 cursor-pointer">Delete</button>
+                        <input ${e.complete ? 'checked' : ''}  onchange="completeTodo(${e.id})" class="todoCheckbox cursor-pointer" type="checkbox" name="todoCheckbox" >
+                        <button onclick="deleteTodo(${e.id})"   class="deleteBtn text-todo-danger font-bold mr-2 cursor-pointer">Delete</button>
                     </div>
                 </li>`
 
-    todoInput.value = ''
+    })
+
+
 }
 
-todoContainer.addEventListener('click', (e) => {
-    if (e.target.classList.contains('deleteBtn')) {
-        e.target.closest('.todoItem').remove()
-    }
-})
+function addTodo(newTodo) {
 
-todoContainer.addEventListener('change', (e) => {
-    if (e.target.classList.contains('todoCheckbox')) {
-        let todoItem = e.target.closest('.todoItem')
-        let todoText = todoItem.querySelector('.todoText')
-
-        if (e.target.checked) {
-            todoText.classList.add('line-through')
-        } else {
-            todoText.classList.remove('line-through')
-
-        }
+    if (newTodo == "") {
+        return alert('Please enter value')
     }
 
-})
+    todos.push({
+        id: Date.now(),
+        name: newTodo.trim(),
+        complete: false
+    })
+
+    localStorage.setItem('todos', JSON.stringify(todos))
+
+    todoInput.value = ''
+
+    renderTodo()
+}
+
+function deleteTodo(item) {
+
+    let index = todos.findIndex((e) => e.id == item)
+
+    todos.splice(index, 1);
+
+    localStorage.setItem('todos', JSON.stringify(todos))
+
+    renderTodo()
+}
+
+function completeTodo(id) {
+
+    let item = todos.find(e => e.id == id)
+
+
+    item.complete = !item.complete
+
+    localStorage.setItem('todos', JSON.stringify(todos))
+
+    renderTodo()
+
+}
 
 todoInput.addEventListener('keydown', (e) => {
     if (e.key == 'Enter') {
@@ -69,3 +93,5 @@ fetch('https://dummyjson.com/quotes?limit=7')
     .catch((error) => {
         console.log(error);
     })
+
+renderTodo()
