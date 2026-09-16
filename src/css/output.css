@@ -380,6 +380,20 @@
   .focus\:bg-todo-primary:focus {
     background-color: var(--color-todo-primary);
   }
+  @media (width >= 40rem) {
+    .sm\:mx-auto {
+      margin-inline: auto;
+    }
+    .sm\:flex {
+      display: flex;
+    }
+    .sm\:w-1\/2 {
+      width: calc(1 / 2 * 100%);
+    }
+    .sm\:flex-row-reverse {
+      flex-direction: row-reverse;
+    }
+  }
 }
 @property --tw-border-style {
   syntax: "*";
